@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+
+  urls-api:
+    build:
+      dockerfile: Dockerfile.dev
+    volumes: 
+      - /app/node_modules
+      - ./api:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - CONNECTION_STRING=postgres://postgres:postgres_password@urls-db:5432/urls
+      - SHORT_URL_DOMAIN=http://localhost:5000
+
+  urls-db:
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_DB=urls
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always    
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=pgadmin@pgadmin.org
+      - PGADMIN_DEFAULT_PASSWORD=postgres_password
+    ports:
+      - 9010:80
+    depends_on: 
+      - urls-db
